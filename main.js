@@ -16,32 +16,26 @@ document.addEventListener("DOMContentLoaded", function () {
   const WORD_LENGTH = 5
 
   const checkWord = (answer, guess) => {
-    const initialPass = answer.split("").map((char, index) => {
-      const charGuess = guess[index]
-      if (char === charGuess) return OPTIONS.CORRECT
-      else if (answer.includes(charGuess)) return null
-      else return OPTIONS.ABSENT
+    const indexMatch = new Map()
+    const answerMap = new Map()
+    answer.split("").forEach((char, index) => {
+      indexMatch.set(index, guess[index] === answer[index])
+      answerMap.set(char, (answerMap.get(char) || []).concat(index))
     })
-    if (!initialPass.includes(null)) return initialPass
-    return initialPass.map((result, index) => {
-      const charGuess = guess[index]
-      if (result !== null) return result
-      const charIndices = answer.split("")
-        .map((char, index) => ({isEqual: char === charGuess, index}))
-        .filter(({isEqual}) => isEqual)
-        .map(({index}) => index)
-      const containsCharNotGuessed = !charIndices.every(index => initialPass[index] === OPTIONS.CORRECT)
-      if (answer.includes(charGuess) && containsCharNotGuessed) return OPTIONS.PRESENT
-      else return OPTIONS.ABSENT
+    return guess.split("").map((char, index) => {
+      const answerChar = answer[index]
+      if (char === answerChar) return OPTIONS.CORRECT
+      const indices = answerMap.get(char)
+      if (indices && indices.some(index => !indexMatch.get(index))) return OPTIONS.PRESENT
+      return OPTIONS.ABSENT
     })
-
   }
 
   const resultToText = (result) => {
     return result.map(option => OPTIONS_TO_TEXT[option])
   }
 
-  const content = resultToText(checkWord("agora", "arose"))
+  const content = resultToText(checkWord("agora", "arose")).join() // GYGBB
   console.log(content)
 
   const CONTAINER_ID = "wordal"
