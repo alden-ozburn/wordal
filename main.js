@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const QUERY_PARAM_ANSWER_KEY = "answer"
   const ENCODED_ANSWER = (new URLSearchParams(window.location.search)).get(QUERY_PARAM_ANSWER_KEY)
-  const DECODED_ANSWER = window.atob(ENCODED_ANSWER)
+  const DECODED_ANSWER = ENCODED_ANSWER ? window.atob(ENCODED_ANSWER) : ""
 
   const WORD_LENGTH = DECODED_ANSWER.length
   const MAX_GUESS_COUNT = WORD_LENGTH + 1
@@ -198,7 +198,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const CONTAINER_ID = "wordal"
   const container = document.getElementById(CONTAINER_ID)
-  container.appendChild(generateBoard(WORD_LENGTH, MAX_GUESS_COUNT))
-  container.appendChild(generateActions(WORD_LENGTH))
+  if (DECODED_ANSWER.length) {
+    container.appendChild(generateBoard(WORD_LENGTH, MAX_GUESS_COUNT))
+    container.appendChild(generateActions(WORD_LENGTH))
+  }
   container.appendChild(generateLinkGenerator())
 })
