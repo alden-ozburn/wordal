@@ -1,0 +1,31 @@
+.board {
+  border: 5px solid black;
+}
+
+.line {
+  display: flex;
+  flex-direction: row;
+}
+
+.cell {
+  border: 1px solid black;
+}
+
+.field {
+  border: none;
+}
+
+.field.present {
+  color: white;
+  background: goldenrod;
+}
+
+.field.correct {
+  color: white;
+  background: limegreen;
+}
+
+.field.absent {
+  color: white;
+  background: dimgrey;
+}

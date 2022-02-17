@@ -12,8 +12,14 @@ document.addEventListener("DOMContentLoaded", function () {
     CORRECT: "G",
     ABSENT: "B",
   })
+  const OPTIONS_TO_CLASS = Object.freeze({
+    PRESENT: "present",
+    CORRECT: "correct",
+    ABSENT: "absent",
+  })
 
   const WORD_LENGTH = 5
+  const MAX_GUESS_COUNT = 6
 
   const checkWord = (answer, guess) => {
     const indexMatch = new Map()
@@ -35,10 +41,76 @@ document.addEventListener("DOMContentLoaded", function () {
     return result.map(option => OPTIONS_TO_TEXT[option])
   }
 
-  const content = resultToText(checkWord("agora", "arose")).join() // GYGBB
-  console.log(content)
+  const creatBoard = () => {
+    const board = document.createElement("div")
+    board.classList.add("board")
+    return board
+  }
+
+  const createLineId = row => `line-${row}`
+  const createLine = row => {
+    const line = document.createElement("div")
+    line.id = createLineId(row)
+    line.classList.add("line")
+    return line
+  }
+
+  const createCellId = (row, column) => `cell-${row}-${column}`
+  const createFieldId = (row, column) => `field-${row}-${column}`
+  const createCell = (row, column) => {
+    const cell = document.createElement("div")
+    cell.id = createCellId(row, column)
+    cell.classList.add("cell")
+    const field = document.createElement("input")
+    field.id = createFieldId(row, column)
+    field.type = "text"
+    field.classList.add("field")
+    cell.appendChild(field)
+    return cell
+  }
+
+  const fieldsInLine = (wordLength, row) => {
+    const fields = []
+    for (let column = 0; column < wordLength; column++) {
+      fields.push(document.getElementById(createFieldId(row, column)))
+    }
+    return fields
+  }
+  const fieldsToGuess = fields => fields.map(field => field.value).join("")
+
+  const answer = "agora"
+  let currentLine = 0
+  const checkLine = wordLength => {
+    const fields = fieldsInLine(wordLength, currentLine)
+    const guess = fieldsToGuess(fields)
+    const result = checkWord(answer, guess)
+    console.log(resultToText(result))
+    fields.forEach((field, index) => {
+      field.classList.add(OPTIONS_TO_CLASS[result[index]])
+    })
+    currentLine++
+  }
+
+  const generateBoard = (wordLength, maxGuessCount) => {
+    const board = creatBoard()
+    for (let row = 0; row < maxGuessCount; row++) {
+      const line = createLine(row)
+      for (let column = 0; column < wordLength; column++) {
+        const cell = createCell(row, column)
+        line.appendChild(cell)
+      }
+      board.appendChild(line)
+    }
+    const button = document.createElement("button")
+    button.innerText = "Enter"
+    button.addEventListener("click", function () {
+      checkLine(wordLength)
+    })
+    board.appendChild(button)
+    return board
+  }
 
   const CONTAINER_ID = "wordal"
   const container = document.getElementById(CONTAINER_ID)
-  container.innerHTML = content
+  container.appendChild(generateBoard(WORD_LENGTH, MAX_GUESS_COUNT))
 })
