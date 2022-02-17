@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const checkLine = (answer, wordLength) => {
     const fields = fieldsInLine(wordLength, currentLine)
     const guess = fieldsToGuess(fields)
-    const result = checkWord(answer, guess)
+    const result = checkWord(answer.toLowerCase(), guess.toLowerCase())
     console.log(resultToText(result))
     fields.forEach((field, index) => {
       field.parentElement.classList.add(OPTIONS_TO_CLASS[result[index]])
