@@ -1,31 +1,44 @@
-.board {
-  border: 5px solid black;
+body {
+  background: black;
 }
 
-.line {
+.board {}
+
+.board .line {
   display: flex;
   flex-direction: row;
 }
 
-.cell {
-  border: 1px solid black;
+.board .line .cell {
+  border: 1px solid darkgrey;
 }
 
-.field {
+.board .line .cell .field {
+  background: black;
+  color: white;
   border: none;
 }
 
-.field.present {
-  color: white;
+.board .line .cell .field.present {
   background: goldenrod;
 }
 
-.field.correct {
-  color: white;
+.board .line .cell .field.correct {
   background: limegreen;
 }
 
-.field.absent {
-  color: white;
+.board .line .cell .field.absent {
   background: dimgrey;
+}
+
+.link-generator .field {
+  background: black;
+  color: white;
+  border: 1px solid darkgrey;
+}
+
+.link-generator .button {}
+
+.link-generator .link {
+  color: white;
 }

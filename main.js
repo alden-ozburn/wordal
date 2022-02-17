@@ -126,15 +126,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const generateLinkGenerator = () => {
     const container = document.createElement("div")
+    container.classList.add("link-generator")
 
     const field = document.createElement("input")
     field.type = "text"
+    field.classList.add("field")
 
     const link = document.createElement("a")
     link.target = "_blank"
+    link.classList.add("link")
 
     const button = document.createElement("button")
-    button.innerText = "Generate"
+    button.innerText = "Copy"
+    button.classList.add("button")
     button.addEventListener("click", function () {
       const answer = field.value
       const href = generateLink(answer)
