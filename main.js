@@ -21,6 +21,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const WORD_LENGTH = 5
   const MAX_GUESS_COUNT = 6
 
+  const QUERY_PARAM_ANSWER_KEY = "answer"
+  const ENCODED_ANSWER = (new URLSearchParams(window.location.search)).get(QUERY_PARAM_ANSWER_KEY)
+  const DECODED_ANSWER = window.atob(ENCODED_ANSWER)
+
   const checkWord = (answer, guess) => {
     const indexMatch = new Map()
     const answerMap = new Map()
@@ -78,9 +82,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   const fieldsToGuess = fields => fields.map(field => field.value).join("")
 
-  const answer = "agora"
   let currentLine = 0
-  const checkLine = wordLength => {
+  const checkLine = (answer, wordLength) => {
     const fields = fieldsInLine(wordLength, currentLine)
     const guess = fieldsToGuess(fields)
     const result = checkWord(answer, guess)
@@ -104,7 +107,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const button = document.createElement("button")
     button.innerText = "Enter"
     button.addEventListener("click", function () {
-      checkLine(wordLength)
+      checkLine(DECODED_ANSWER, wordLength)
     })
     board.appendChild(button)
     return board
