@@ -88,12 +88,27 @@ document.addEventListener("DOMContentLoaded", function () {
     return fields.every(field => field.value.length === 1)
   }
 
-  let currentLine = 0
-  const checkLine = (answer, wordLength) => {
-    const fields = fieldsInLine(wordLength, currentLine)
+  const getResultFromLine = (answer, wordLength, line) => {
+    const fields = fieldsInLine(wordLength, line)
     const guess = fieldsToGuess(fields)
     const result = checkWord(answer.toLowerCase(), guess.toLowerCase())
+    return result
+  }
+
+  const getBoardState = (answer, wordLength) => {
+    const results = []
+    for (let row = 0; row < currentLine; row++) {
+      const result = getResultFromLine(answer, wordLength, row)
+      results.push(result)
+    }
+    return results.map(result => resultToEmoji(result)).join("\n")
+  }
+
+  let currentLine = 0
+  const checkLine = (answer, wordLength) => {
+    const result = getResultFromLine(answer, wordLength, currentLine)
     console.log(resultToEmoji(result))
+    const fields = fieldsInLine(wordLength, currentLine)
     fields.forEach((field, index) => {
       field.parentElement.classList.add(OPTIONS_TO_CLASS[result[index]])
     })
@@ -113,18 +128,29 @@ document.addEventListener("DOMContentLoaded", function () {
     return board
   }
 
-  const generateCheckButton = (wordLength) => {
+  const generateActions = (wordLength) => {
     const container = document.createElement("div")
     container.classList.add("check-button-container")
-    const button = document.createElement("button")
-    button.innerText = "Check"
-    button.classList.add("check-button")
-    button.addEventListener("click", function () {
+
+    const checkButton = document.createElement("button")
+    checkButton.innerText = "Check"
+    checkButton.classList.add("check-button")
+    checkButton.addEventListener("click", function () {
       if (currentLine >= MAX_GUESS_COUNT) { return }
       if (!lineIsValid(WORD_LENGTH, currentLine)) { return }
       checkLine(DECODED_ANSWER, wordLength)
     })
-    container.appendChild(button)
+
+    const shareButton = document.createElement("button")
+    shareButton.innerText = "Share"
+    shareButton.classList.add("share-button")
+    shareButton.addEventListener("click", function () {
+      const state = getBoardState(DECODED_ANSWER, WORD_LENGTH)
+      console.log(state)
+    })
+
+    container.appendChild(checkButton)
+    container.appendChild(shareButton)
     return container
   }
 
@@ -173,6 +199,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const CONTAINER_ID = "wordal"
   const container = document.getElementById(CONTAINER_ID)
   container.appendChild(generateBoard(WORD_LENGTH, MAX_GUESS_COUNT))
-  container.appendChild(generateCheckButton(WORD_LENGTH))
+  container.appendChild(generateActions(WORD_LENGTH))
   container.appendChild(generateLinkGenerator())
 })
