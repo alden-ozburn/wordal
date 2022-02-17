@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const result = checkWord(answer, guess)
     console.log(resultToText(result))
     fields.forEach((field, index) => {
-      field.classList.add(OPTIONS_TO_CLASS[result[index]])
+      field.parentElement.classList.add(OPTIONS_TO_CLASS[result[index]])
     })
     currentLine++
   }

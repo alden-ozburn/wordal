@@ -25,28 +25,28 @@ body {
   height: 50px;
   font-size: 50px;
   text-align: center;
+  background: black;
 }
 
 .board .line .cell .field {
-  background: black;
+  background: transparent;
   color: white;
   border: none;
-  width: inherit;
-  height: inherit;
   padding: 0;
   text-align: center;
   font-size: 30px;
+  width: 100%;
 }
 
-.board .line .cell .field.present {
+.board .line .cell.present {
   background: goldenrod;
 }
 
-.board .line .cell .field.correct {
+.board .line .cell.correct {
   background: limegreen;
 }
 
-.board .line .cell .field.absent {
+.board .line .cell.absent {
   background: dimgrey;
 }
 
