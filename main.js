@@ -113,7 +113,42 @@ document.addEventListener("DOMContentLoaded", function () {
     return board
   }
 
+  const getBaseUrl = () => window.location.href.split("?")[0]
+  const generateLink = answer => {
+    const encodedAnswer = window.btoa(answer)
+    const baseUrl = getBaseUrl()
+    const searchParams = new URLSearchParams()
+    searchParams.set("answer", encodedAnswer)
+    const queryString = searchParams.toString()
+    return `${baseUrl}?${queryString}`
+  }
+
+  const generateLinkGenerator = () => {
+    const container = document.createElement("div")
+
+    const field = document.createElement("input")
+    field.type = "text"
+
+    const link = document.createElement("a")
+    link.target = "_blank"
+
+    const button = document.createElement("button")
+    button.innerText = "Generate"
+    button.addEventListener("click", function () {
+      const answer = field.value
+      const href = generateLink(answer)
+      link.innerText = href
+      link.href = href
+    })
+
+    container.appendChild(field)
+    container.appendChild(button)
+    container.appendChild(link)
+    return container
+  }
+
   const CONTAINER_ID = "wordal"
   const container = document.getElementById(CONTAINER_ID)
   container.appendChild(generateBoard(WORD_LENGTH, MAX_GUESS_COUNT))
+  container.appendChild(generateLinkGenerator())
 })
