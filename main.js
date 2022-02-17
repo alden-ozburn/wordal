@@ -18,12 +18,12 @@ document.addEventListener("DOMContentLoaded", function () {
     ABSENT: String.fromCodePoint(0x2B1B),
   })
 
-  const WORD_LENGTH = 5
-  const MAX_GUESS_COUNT = 6
-
   const QUERY_PARAM_ANSWER_KEY = "answer"
   const ENCODED_ANSWER = (new URLSearchParams(window.location.search)).get(QUERY_PARAM_ANSWER_KEY)
   const DECODED_ANSWER = window.atob(ENCODED_ANSWER)
+
+  const WORD_LENGTH = DECODED_ANSWER.length
+  const MAX_GUESS_COUNT = WORD_LENGTH + 1
 
   const checkWord = (answer, guess) => {
     const indexMatch = new Map()
