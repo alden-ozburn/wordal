@@ -7,15 +7,15 @@ document.addEventListener("DOMContentLoaded", function () {
     CORRECT,
     ABSENT,
   })
-  const OPTIONS_TO_TEXT = Object.freeze({
-    PRESENT: "Y",
-    CORRECT: "G",
-    ABSENT: "B",
-  })
   const OPTIONS_TO_CLASS = Object.freeze({
     PRESENT: "present",
     CORRECT: "correct",
     ABSENT: "absent",
+  })
+  const OPTIONS_TO_EMOJI = Object.freeze({
+    PRESENT: String.fromCodePoint(0x1F7E8),
+    CORRECT: String.fromCodePoint(0x1F7E9),
+    ABSENT: String.fromCodePoint(0x2B1B),
   })
 
   const WORD_LENGTH = 5
@@ -41,8 +41,8 @@ document.addEventListener("DOMContentLoaded", function () {
     })
   }
 
-  const resultToText = (result) => {
-    return result.map(option => OPTIONS_TO_TEXT[option])
+  const resultToEmoji = (result) => {
+    return result.map(option => OPTIONS_TO_EMOJI[option]).join("")
   }
 
   const creatBoard = () => {
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const fields = fieldsInLine(wordLength, currentLine)
     const guess = fieldsToGuess(fields)
     const result = checkWord(answer.toLowerCase(), guess.toLowerCase())
-    console.log(resultToText(result))
+    console.log(resultToEmoji(result))
     fields.forEach((field, index) => {
       field.parentElement.classList.add(OPTIONS_TO_CLASS[result[index]])
     })
