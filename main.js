@@ -107,6 +107,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const button = document.createElement("button")
     button.innerText = "Enter"
     button.addEventListener("click", function () {
+      if (currentLine >= MAX_GUESS_COUNT) { return }
       checkLine(DECODED_ANSWER, wordLength)
     })
     board.appendChild(button)
