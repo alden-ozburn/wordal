@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function () {
     link.classList.add("link")
 
     const button = document.createElement("button")
-    button.innerText = "Copy"
+    button.innerText = "Generate"
     button.classList.add("button")
     button.addEventListener("click", function () {
       const answer = field.value
