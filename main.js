@@ -68,6 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const field = document.createElement("input")
     field.id = createFieldId(row, column)
     field.type = "text"
+    field.maxLength = 1
     field.classList.add("field")
     cell.appendChild(field)
     return cell
@@ -81,6 +82,11 @@ document.addEventListener("DOMContentLoaded", function () {
     return fields
   }
   const fieldsToGuess = fields => fields.map(field => field.value).join("")
+
+  const lineIsValid = (wordLength, row) => {
+    const fields = fieldsInLine(wordLength, row)
+    return fields.every(field => field.value.length === 1)
+  }
 
   let currentLine = 0
   const checkLine = (answer, wordLength) => {
@@ -115,6 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
     button.classList.add("check-button")
     button.addEventListener("click", function () {
       if (currentLine >= MAX_GUESS_COUNT) { return }
+      if (!lineIsValid(WORD_LENGTH, currentLine)) { return }
       checkLine(DECODED_ANSWER, wordLength)
     })
     container.appendChild(button)
