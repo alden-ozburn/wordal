@@ -104,14 +104,21 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       board.appendChild(line)
     }
+    return board
+  }
+
+  const generateCheckButton = (wordLength) => {
+    const container = document.createElement("div")
+    container.classList.add("check-button-container")
     const button = document.createElement("button")
-    button.innerText = "Enter"
+    button.innerText = "Check"
+    button.classList.add("check-button")
     button.addEventListener("click", function () {
       if (currentLine >= MAX_GUESS_COUNT) { return }
       checkLine(DECODED_ANSWER, wordLength)
     })
-    board.appendChild(button)
-    return board
+    container.appendChild(button)
+    return container
   }
 
   const getBaseUrl = () => window.location.href.split("?")[0]
@@ -159,5 +166,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const CONTAINER_ID = "wordal"
   const container = document.getElementById(CONTAINER_ID)
   container.appendChild(generateBoard(WORD_LENGTH, MAX_GUESS_COUNT))
+  container.appendChild(generateCheckButton(WORD_LENGTH))
   container.appendChild(generateLinkGenerator())
 })

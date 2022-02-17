@@ -10,6 +10,8 @@ body {
   margin-left: auto;
   margin-right: auto;
   width: fit-content;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .board .line {
@@ -19,12 +21,21 @@ body {
 
 .board .line .cell {
   border: 1px solid darkgrey;
+  width: 50px;
+  height: 50px;
+  font-size: 50px;
+  text-align: center;
 }
 
 .board .line .cell .field {
   background: black;
   color: white;
   border: none;
+  width: inherit;
+  height: inherit;
+  padding: 0;
+  text-align: center;
+  font-size: 30px;
 }
 
 .board .line .cell .field.present {
@@ -38,6 +49,14 @@ body {
 .board .line .cell .field.absent {
   background: dimgrey;
 }
+
+.check-button-container {
+  margin-left: auto;
+  margin-right: auto;
+  width: fit-content;
+}
+
+.check-button-container .check-button {}
 
 .link-generator {
   margin-left: auto;
