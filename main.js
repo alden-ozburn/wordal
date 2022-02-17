@@ -146,9 +146,13 @@ document.addEventListener("DOMContentLoaded", function () {
       link.href = href
     })
 
-    container.appendChild(field)
-    container.appendChild(button)
-    container.appendChild(link)
+    const inputContainer = document.createElement("div")
+    const outputContainer = document.createElement("div")
+    inputContainer.appendChild(field)
+    inputContainer.appendChild(button)
+    outputContainer.appendChild(link)
+    container.appendChild(inputContainer)
+    container.appendChild(outputContainer)
     return container
   }
 
