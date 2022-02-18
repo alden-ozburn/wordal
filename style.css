@@ -119,3 +119,7 @@ body {
 .keyboard .keyboard-row .keyboard-key.absent {
   background: black;
 }
+
+.hidden {
+  visibility: hidden;
+}

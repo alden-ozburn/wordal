@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
+  const NAME = "Wordal"
+
   const PRESENT = "PRESENT"
   const CORRECT = "CORRECT"
   const ABSENT = "ABSENT"
@@ -112,12 +114,21 @@ document.addEventListener("DOMContentLoaded", function () {
   const resultIsCorrect = result => {
     return result.every(option => option === OPTIONS.CORRECT)
   }
+  const showShareButton = () => {
+    const shareButtonId = createShareButtonId()
+    const shareButton = document.getElementById(shareButtonId)
+    shareButton.classList.remove("hidden")
+  }
+  const onCorrectGuess = () => {
+    hasGuessedCorrectly = true
+    showShareButton()
+  }
   const checkLine = (answer, wordLength) => {
     const guess = getGuessFromLine(wordLength, currentLine)
     const result = getResult(answer, guess)
     console.log(resultToEmoji(result))
     if (resultIsCorrect(result)) {
-      hasGuessedCorrectly = true
+      onCorrectGuess()
     }
     const cells = cellsInLine(wordLength, currentLine)
     cells.forEach((cell, index) => {
@@ -140,32 +151,6 @@ document.addEventListener("DOMContentLoaded", function () {
     return board
   }
 
-  const generateActions = (wordLength) => {
-    const container = document.createElement("div")
-    container.classList.add("check-button-container")
-
-    const checkButton = document.createElement("button")
-    checkButton.innerText = "Check"
-    checkButton.classList.add("check-button")
-    checkButton.addEventListener("click", function () {
-      if (currentLine >= MAX_GUESS_COUNT) { return }
-      if (!lineIsValid(WORD_LENGTH, currentLine)) { return }
-      checkLine(DECODED_ANSWER, wordLength)
-    })
-
-    const shareButton = document.createElement("button")
-    shareButton.innerText = "Share"
-    shareButton.classList.add("share-button")
-    shareButton.addEventListener("click", function () {
-      const state = getBoardState(DECODED_ANSWER, WORD_LENGTH)
-      console.log(state)
-    })
-
-    container.appendChild(checkButton)
-    container.appendChild(shareButton)
-    return container
-  }
-
   const getBaseUrl = () => window.location.href.split("?")[0]
   const generateLink = answer => {
     const encodedAnswer = window.btoa(answer)
@@ -176,6 +161,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return `${baseUrl}?${queryString}`
   }
 
+  const createShareButtonId = () => "share-button"
   const generateLinkGenerator = () => {
     const container = document.createElement("div")
     container.classList.add("link-generator")
@@ -184,29 +170,37 @@ document.addEventListener("DOMContentLoaded", function () {
     field.type = "text"
     field.classList.add("field")
 
-    const link = document.createElement("a")
-    link.target = "_blank"
-    link.classList.add("link")
-
-    const button = document.createElement("button")
-    button.innerText = "Generate"
-    button.classList.add("button")
-    button.addEventListener("click", function () {
+    const linkButton = document.createElement("button")
+    linkButton.innerText = "generate"
+    linkButton.classList.add("button")
+    linkButton.addEventListener("click", function () {
       const answer = field.value
       if (!answer) { return }
+      const link = document.createElement("a")
+      link.target = "_blank"
       const href = generateLink(answer)
       link.innerText = href
       link.href = href
       link.click()
     })
 
-    const inputContainer = document.createElement("div")
-    const outputContainer = document.createElement("div")
-    inputContainer.appendChild(field)
-    inputContainer.appendChild(button)
-    outputContainer.appendChild(link)
-    container.appendChild(inputContainer)
-    container.appendChild(outputContainer)
+    const shareButton = document.createElement("button")
+    shareButton.id = createShareButtonId()
+    shareButton.innerText = "share"
+    shareButton.classList.add("button")
+    shareButton.classList.add("hidden")
+    shareButton.addEventListener("click", function () {
+      const state = getBoardState(DECODED_ANSWER, WORD_LENGTH)
+      const text = [NAME, ENCODED_ANSWER, state].join("\n")
+      console.log(text)
+      navigator.clipboard.writeText(text).then(() => {
+        window.alert("Text copied")
+      })
+    })
+
+    container.appendChild(field)
+    container.appendChild(linkButton)
+    container.appendChild(shareButton)
     return container
   }
 
@@ -331,7 +325,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (isValidGame) {
     container.appendChild(generateBoard(WORD_LENGTH, MAX_GUESS_COUNT))
-    // container.appendChild(generateActions(WORD_LENGTH))
   }
   if (isValidGame) {
     container.appendChild(generateKeyboard(
