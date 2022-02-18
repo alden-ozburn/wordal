@@ -101,9 +101,16 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   let currentLine = 0
+  let hasGuessedCorrectly = false
+  const resultIsCorrect = result => {
+    return result.every(option => option === OPTIONS.CORRECT)
+  }
   const checkLine = (answer, wordLength) => {
     const result = getResultFromLine(answer, wordLength, currentLine)
     console.log(resultToEmoji(result))
+    if (resultIsCorrect(result)) {
+      hasGuessedCorrectly = true
+    }
     const cells = cellsInLine(wordLength, currentLine)
     cells.forEach((cell, index) => {
       cell.classList.add(OPTIONS_TO_CLASS[result[index]])
@@ -274,12 +281,15 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   const onClickLetter = (letter) => {
+    if (hasGuessedCorrectly) { return }
     enterLetter(letter)
   }
   const onClickEnter = () => {
+    if (hasGuessedCorrectly) { return }
     checkCurrentGuess()
   }
   const onClickBackspace = () => {
+    if (hasGuessedCorrectly) { return }
     removeCurrentLetter()
   }
 
