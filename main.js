@@ -27,6 +27,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const WORD_LENGTH = DECODED_ANSWER.length
   const MAX_GUESS_COUNT = WORD_LENGTH + 1
 
+  const CONTAINER_ID = "wordal"
+  const isValidGame = DECODED_ANSWER.length > 0
+  let hasGuessedCorrectly = false
+  let currentLine = 0
+  let currentLetter = 0
+
   const checkWord = (answer, guess) => {
     const indexMatch = new Map()
     const answerMap = new Map()
@@ -108,8 +114,6 @@ document.addEventListener("DOMContentLoaded", function () {
     return results.map(result => resultToEmoji(result)).join("\n")
   }
 
-  let currentLine = 0
-  let hasGuessedCorrectly = false
   const letterValueMap = new Map()
   const resultIsCorrect = result => {
     return result.every(option => option === OPTIONS.CORRECT)
@@ -277,7 +281,6 @@ document.addEventListener("DOMContentLoaded", function () {
     })
   }
 
-  let currentLetter = 0
   const getCurrentCell = () => {
     if (currentLetter > WORD_LENGTH) { return null }
     const currentCellId = createCellId(currentLine, currentLetter)
@@ -324,14 +327,9 @@ document.addEventListener("DOMContentLoaded", function () {
     removeCurrentLetter()
   }
 
-  const CONTAINER_ID = "wordal"
   const container = document.getElementById(CONTAINER_ID)
-  const isValidGame = DECODED_ANSWER.length > 0
-
   if (isValidGame) {
     container.appendChild(generateBoard(WORD_LENGTH, MAX_GUESS_COUNT))
-  }
-  if (isValidGame) {
     container.appendChild(generateKeyboard(
       onClickLetter,
       onClickEnter,
