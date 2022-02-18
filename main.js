@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return cell
   }
 
-  const getCellValue = (cell) => cell.innerText
+  const getCellValue = (cell) => cell.innerText.toLowerCase()
   const setCellValue = (cell, value) => cell.innerText = value
 
   const cellsInLine = (wordLength, row) => {
@@ -84,12 +84,18 @@ document.addEventListener("DOMContentLoaded", function () {
     return cells.every(cell => getCellValue(cell).length === 1)
   }
 
-  const getResultFromLine = (answer, wordLength, line) => {
+  const getGuessFromLine = (wordLength, line) => {
     const cells = cellsInLine(wordLength, line)
-    const guess = cellsToGuess(cells)
-    const result = checkWord(answer.toLowerCase(), guess.toLowerCase())
-    return result
+    return cellsToGuess(cells)
   }
+  const getResult = (answer, guess) => {
+    return checkWord(answer.toLowerCase(), guess.toLowerCase())
+  }
+  const getResultFromLine = (answer, wordLength, line) => {
+    const guess = getGuessFromLine(wordLength, line)
+    return getResult(answer, guess)
+  }
+
 
   const getBoardState = (answer, wordLength) => {
     const results = []
@@ -102,11 +108,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let currentLine = 0
   let hasGuessedCorrectly = false
+  const letterValueMap = new Map()
   const resultIsCorrect = result => {
     return result.every(option => option === OPTIONS.CORRECT)
   }
   const checkLine = (answer, wordLength) => {
-    const result = getResultFromLine(answer, wordLength, currentLine)
+    const guess = getGuessFromLine(wordLength, currentLine)
+    const result = getResult(answer, guess)
     console.log(resultToEmoji(result))
     if (resultIsCorrect(result)) {
       hasGuessedCorrectly = true
@@ -115,6 +123,8 @@ document.addEventListener("DOMContentLoaded", function () {
     cells.forEach((cell, index) => {
       cell.classList.add(OPTIONS_TO_CLASS[result[index]])
     })
+
+    updateKeyboard(guess, result)
   }
 
   const generateBoard = (wordLength, maxGuessCount) => {
@@ -200,6 +210,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return container
   }
 
+  const createKeyId = letter => `key-${letter}`
   const generateKeyboard = (onClickLetter, onClickEnter, onClickBackspace) => {
     const ALPHABET_KEYS = [
       ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
@@ -216,17 +227,18 @@ document.addEventListener("DOMContentLoaded", function () {
       if (row === LAST_ROW) {
         const enterKey = document.createElement("button")
         enterKey.classList.add("keyboard-key")
-        enterKey.innerText = "ENTER"
+        enterKey.innerText = "enter"
         enterKey.addEventListener("click", function () {
           onClickEnter()
         })
         keyRow.appendChild(enterKey)
       }
       for (let letter = 0; letter < rowLetters.length; letter++) {
-        const key = document.createElement("button")
-        key.classList.add("keyboard-key")
         const letterValue = rowLetters[letter]
-        key.innerText = letterValue.toUpperCase()
+        const key = document.createElement("button")
+        key.id = createKeyId(letterValue)
+        key.classList.add("keyboard-key")
+        key.innerText = letterValue
         key.addEventListener("click", function () {
           onClickLetter(letterValue)
         })
@@ -244,6 +256,26 @@ document.addEventListener("DOMContentLoaded", function () {
       keyboard.appendChild(keyRow)
     }
     return keyboard
+  }
+
+  const updateKeyboard = (guess, result) => {
+    guess.split("").forEach((letterValue, index) => {
+      const option = result[index]
+      if (option === OPTIONS.ABSENT) {
+        letterValueMap.set(letterValue, option)
+      } else if (option === OPTIONS.PRESENT) {
+        if (letterValueMap.get(letterValue) !== OPTIONS.CORRECT) {
+          letterValueMap.set(letterValue, option)
+        }
+      } else if (option === OPTIONS.CORRECT) {
+        letterValueMap.set(letterValue, option)
+      }
+    })
+    letterValueMap.forEach((option, letterValue) => {
+      const keyId = createKeyId(letterValue)
+      const key = document.getElementById(keyId)
+      key.classList.add(OPTIONS_TO_CLASS[option])
+    })
   }
 
   let currentLetter = 0
