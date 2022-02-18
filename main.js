@@ -112,7 +112,6 @@ document.addEventListener("DOMContentLoaded", function () {
     fields.forEach((field, index) => {
       field.parentElement.classList.add(OPTIONS_TO_CLASS[result[index]])
     })
-    currentLine++
   }
 
   const generateBoard = (wordLength, maxGuessCount) => {
@@ -196,11 +195,110 @@ document.addEventListener("DOMContentLoaded", function () {
     return container
   }
 
+  const generateKeyboard = (onClickLetter, onClickEnter, onClickBackspace) => {
+    const ALPHABET_KEYS = [
+      ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+      ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
+      ["z", "x", "c", "v", "b", "n", "m"]
+    ]
+    const LAST_ROW = ALPHABET_KEYS.length - 1
+    const keyboard = document.createElement("div")
+    keyboard.classList.add("keyboard")
+    for (let row = 0; row < ALPHABET_KEYS.length; row++) {
+      const keyRow = document.createElement("div")
+      keyRow.classList.add("keyboard-row")
+      const rowLetters = ALPHABET_KEYS[row]
+      if (row === LAST_ROW) {
+        const enterKey = document.createElement("button")
+        enterKey.classList.add("keyboard-key")
+        enterKey.innerText = "ENTER"
+        enterKey.addEventListener("click", function () {
+          onClickEnter()
+        })
+        keyRow.appendChild(enterKey)
+      }
+      for (let letter = 0; letter < rowLetters.length; letter++) {
+        const key = document.createElement("button")
+        key.classList.add("keyboard-key")
+        const letterValue = rowLetters[letter]
+        key.innerText = letterValue.toUpperCase()
+        key.addEventListener("click", function () {
+          onClickLetter(letterValue)
+        })
+        keyRow.appendChild(key)
+      }
+      if (row === LAST_ROW) {
+        const backspaceKey = document.createElement("button")
+        backspaceKey.classList.add("keyboard-key")
+        backspaceKey.innerText = "<="
+        backspaceKey.addEventListener("click", function () {
+          onClickBackspace()
+        })
+        keyRow.appendChild(backspaceKey)
+      }
+      keyboard.appendChild(keyRow)
+    }
+    return keyboard
+  }
+
   const CONTAINER_ID = "wordal"
   const container = document.getElementById(CONTAINER_ID)
-  if (DECODED_ANSWER.length) {
-    container.appendChild(generateBoard(WORD_LENGTH, MAX_GUESS_COUNT))
-    container.appendChild(generateActions(WORD_LENGTH))
-  }
+  const isValidGame = DECODED_ANSWER.length > 0
+
   container.appendChild(generateLinkGenerator())
+  if (isValidGame) {
+    container.appendChild(generateBoard(WORD_LENGTH, MAX_GUESS_COUNT))
+    // container.appendChild(generateActions(WORD_LENGTH))
+  }
+
+  let currentLetter = 0
+  const getCurrentField = () => {
+    if (currentLetter > WORD_LENGTH) { return null }
+    const currentFieldId = createFieldId(currentLine, currentLetter)
+    return document.getElementById(currentFieldId)
+  }
+  const getLastField = () => {
+    if (currentLetter < 1) return null
+    const currentFieldId = createFieldId(currentLine, currentLetter - 1)
+    return document.getElementById(currentFieldId)
+  }
+
+  const enterLetter = (letter) => {
+    const currentField = getCurrentField()
+    if (!currentField) { return }
+    currentField.value = letter
+    currentLetter++
+  }
+
+  const checkCurrentGuess = () => {
+    if (currentLine >= MAX_GUESS_COUNT) { return }
+    if (!lineIsValid(WORD_LENGTH, currentLine)) { return }
+    checkLine(DECODED_ANSWER, WORD_LENGTH)
+    currentLine++
+    currentLetter = 0
+  }
+
+  const removeCurrentLetter = () => {
+    const lastField = getLastField()
+    if (!lastField) { return }
+    lastField.value = ""
+    currentLetter--
+  }
+
+  const onClickLetter = (letter) => {
+    enterLetter(letter)
+  }
+  const onClickEnter = () => {
+    checkCurrentGuess()
+  }
+  const onClickBackspace = () => {
+    removeCurrentLetter()
+  }
+  if (isValidGame) {
+    container.appendChild(generateKeyboard(
+      onClickLetter,
+      onClickEnter,
+      onClickBackspace,
+    ))
+  }
 })
