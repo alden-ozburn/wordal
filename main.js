@@ -60,37 +60,33 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   const createCellId = (row, column) => `cell-${row}-${column}`
-  const createFieldId = (row, column) => `field-${row}-${column}`
   const createCell = (row, column) => {
     const cell = document.createElement("div")
     cell.id = createCellId(row, column)
     cell.classList.add("cell")
-    const field = document.createElement("input")
-    field.id = createFieldId(row, column)
-    field.type = "text"
-    field.maxLength = 1
-    field.classList.add("field")
-    cell.appendChild(field)
     return cell
   }
 
-  const fieldsInLine = (wordLength, row) => {
-    const fields = []
+  const getCellValue = (cell) => cell.innerText
+  const setCellValue = (cell, value) => cell.innerText = value
+
+  const cellsInLine = (wordLength, row) => {
+    const cells = []
     for (let column = 0; column < wordLength; column++) {
-      fields.push(document.getElementById(createFieldId(row, column)))
+      cells.push(document.getElementById(createCellId(row, column)))
     }
-    return fields
+    return cells
   }
-  const fieldsToGuess = fields => fields.map(field => field.value).join("")
+  const cellsToGuess = cells => cells.map(getCellValue).join("")
 
   const lineIsValid = (wordLength, row) => {
-    const fields = fieldsInLine(wordLength, row)
-    return fields.every(field => field.value.length === 1)
+    const cells = cellsInLine(wordLength, row)
+    return cells.every(cell => getCellValue(cell).length === 1)
   }
 
   const getResultFromLine = (answer, wordLength, line) => {
-    const fields = fieldsInLine(wordLength, line)
-    const guess = fieldsToGuess(fields)
+    const cells = cellsInLine(wordLength, line)
+    const guess = cellsToGuess(cells)
     const result = checkWord(answer.toLowerCase(), guess.toLowerCase())
     return result
   }
@@ -108,9 +104,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const checkLine = (answer, wordLength) => {
     const result = getResultFromLine(answer, wordLength, currentLine)
     console.log(resultToEmoji(result))
-    const fields = fieldsInLine(wordLength, currentLine)
-    fields.forEach((field, index) => {
-      field.parentElement.classList.add(OPTIONS_TO_CLASS[result[index]])
+    const cells = cellsInLine(wordLength, currentLine)
+    cells.forEach((cell, index) => {
+      cell.classList.add(OPTIONS_TO_CLASS[result[index]])
     })
   }
 
@@ -252,21 +248,21 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   let currentLetter = 0
-  const getCurrentField = () => {
+  const getCurrentCell = () => {
     if (currentLetter > WORD_LENGTH) { return null }
-    const currentFieldId = createFieldId(currentLine, currentLetter)
-    return document.getElementById(currentFieldId)
+    const currentCellId = createCellId(currentLine, currentLetter)
+    return document.getElementById(currentCellId)
   }
-  const getLastField = () => {
+  const getLastCell = () => {
     if (currentLetter < 1) return null
-    const currentFieldId = createFieldId(currentLine, currentLetter - 1)
-    return document.getElementById(currentFieldId)
+    const lastCellId = createCellId(currentLine, currentLetter - 1)
+    return document.getElementById(lastCellId)
   }
 
   const enterLetter = (letter) => {
-    const currentField = getCurrentField()
-    if (!currentField) { return }
-    currentField.value = letter
+    const currentCell = getCurrentCell()
+    if (!currentCell) { return }
+    setCellValue(currentCell, letter)
     currentLetter++
   }
 
@@ -279,9 +275,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   const removeCurrentLetter = () => {
-    const lastField = getLastField()
-    if (!lastField) { return }
-    lastField.value = ""
+    const lastCell = getLastCell()
+    if (!lastCell) { return }
+    setCellValue(lastCell, "")
     currentLetter--
   }
 
