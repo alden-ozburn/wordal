@@ -161,8 +161,18 @@ document.addEventListener("DOMContentLoaded", function () {
     return `${baseUrl}?${queryString}`
   }
 
+  const onShare = () => {
+    if (!hasGuessedCorrectly) { return }
+    const state = getBoardState(DECODED_ANSWER, WORD_LENGTH)
+    const text = [NAME, ENCODED_ANSWER, state].join("\n")
+    console.log(text)
+    navigator.clipboard.writeText(text).then(() => {
+      window.alert("Text copied")
+    })
+  }
+
   const createShareButtonId = () => "share-button"
-  const generateLinkGenerator = () => {
+  const generateActionPanel = (onShare) => {
     const container = document.createElement("div")
     container.classList.add("link-generator")
 
@@ -190,12 +200,7 @@ document.addEventListener("DOMContentLoaded", function () {
     shareButton.classList.add("button")
     shareButton.classList.add("hidden")
     shareButton.addEventListener("click", function () {
-      const state = getBoardState(DECODED_ANSWER, WORD_LENGTH)
-      const text = [NAME, ENCODED_ANSWER, state].join("\n")
-      console.log(text)
-      navigator.clipboard.writeText(text).then(() => {
-        window.alert("Text copied")
-      })
+      onShare()
     })
 
     container.appendChild(field)
@@ -333,5 +338,5 @@ document.addEventListener("DOMContentLoaded", function () {
       onClickBackspace,
     ))
   }
-  container.appendChild(generateLinkGenerator())
+  container.appendChild(generateActionPanel(onShare))
 })
