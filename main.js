@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const createShareButtonId = () => "share-button"
   const generateActionPanel = (onShare) => {
     const container = document.createElement("div")
-    container.classList.add("link-generator")
+    container.classList.add("action-panel")
 
     const field = document.createElement("input")
     field.type = "text"

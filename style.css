@@ -54,7 +54,7 @@ body {
 .check-button-container .check-button {}
 .check-button-container .share-button {}
 
-.link-generator {
+.action-panel {
   margin-left: auto;
   margin-right: auto;
   width: fit-content;
@@ -62,7 +62,7 @@ body {
   font-size: 16px;
 }
 
-.link-generator .field {
+.action-panel .field {
   background: black;
   color: white;
   border: 1px solid dimgrey;
@@ -72,7 +72,7 @@ body {
   text-transform: uppercase;
 }
 
-.link-generator .button {
+.action-panel .button {
   background: dimgrey;
   color: white;
   border: none;
@@ -82,7 +82,7 @@ body {
   text-transform: uppercase;
 }
 
-.link-generator .link {
+.action-panel .link {
   color: white;
   display: none;
 }
