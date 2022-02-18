@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ABSENT: String.fromCodePoint(0x2B1B),
   })
 
-  const QUERY_PARAM_ANSWER_KEY = "answer"
+  const QUERY_PARAM_ANSWER_KEY = "a"
   const ENCODED_ANSWER = (new URLSearchParams(window.location.search)).get(QUERY_PARAM_ANSWER_KEY)
   const DECODED_ANSWER = ENCODED_ANSWER ? window.atob(ENCODED_ANSWER) : ""
 
@@ -154,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const encodedAnswer = window.btoa(answer)
     const baseUrl = getBaseUrl()
     const searchParams = new URLSearchParams()
-    searchParams.set("answer", encodedAnswer)
+    searchParams.set(QUERY_PARAM_ANSWER_KEY, encodedAnswer)
     const queryString = searchParams.toString()
     return `${baseUrl}?${queryString}`
   }
