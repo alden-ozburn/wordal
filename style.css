@@ -84,6 +84,7 @@ body {
 
 .link-generator .link {
   color: white;
+  display: none;
 }
 
 .keyboard {

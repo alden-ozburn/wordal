@@ -179,6 +179,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const href = generateLink(answer)
       link.innerText = href
       link.href = href
+      link.click()
     })
 
     const inputContainer = document.createElement("div")
