@@ -176,6 +176,7 @@ document.addEventListener("DOMContentLoaded", function () {
     button.classList.add("button")
     button.addEventListener("click", function () {
       const answer = field.value
+      if (!answer) { return }
       const href = generateLink(answer)
       link.innerText = href
       link.href = href
