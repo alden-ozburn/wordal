@@ -237,16 +237,6 @@ document.addEventListener("DOMContentLoaded", function () {
     return keyboard
   }
 
-  const CONTAINER_ID = "wordal"
-  const container = document.getElementById(CONTAINER_ID)
-  const isValidGame = DECODED_ANSWER.length > 0
-
-  container.appendChild(generateLinkGenerator())
-  if (isValidGame) {
-    container.appendChild(generateBoard(WORD_LENGTH, MAX_GUESS_COUNT))
-    // container.appendChild(generateActions(WORD_LENGTH))
-  }
-
   let currentLetter = 0
   const getCurrentCell = () => {
     if (currentLetter > WORD_LENGTH) { return null }
@@ -290,6 +280,15 @@ document.addEventListener("DOMContentLoaded", function () {
   const onClickBackspace = () => {
     removeCurrentLetter()
   }
+
+  const CONTAINER_ID = "wordal"
+  const container = document.getElementById(CONTAINER_ID)
+  const isValidGame = DECODED_ANSWER.length > 0
+
+  if (isValidGame) {
+    container.appendChild(generateBoard(WORD_LENGTH, MAX_GUESS_COUNT))
+    // container.appendChild(generateActions(WORD_LENGTH))
+  }
   if (isValidGame) {
     container.appendChild(generateKeyboard(
       onClickLetter,
@@ -297,4 +296,5 @@ document.addEventListener("DOMContentLoaded", function () {
       onClickBackspace,
     ))
   }
+  container.appendChild(generateLinkGenerator())
 })
