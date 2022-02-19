@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
         arrays.map(array => array[index])
       )
     : []
+  const getRandomElement = array => array[Math.floor(Math.random()*array.length)]
   const getBaseUrl = () => window.location.href.split("?")[0]
   const encodeAnswer = answer => answer ? window.btoa(answer) : ""
   const decodeAnswer = encodedAnswer => encodedAnswer ? window.atob(encodedAnswer) : ""
@@ -281,6 +282,16 @@ document.addEventListener("DOMContentLoaded", function () {
     field.placeholder = "answer"
     field.classList.add("field")
 
+    const createAndOpenLink = answer => {
+      const link = document.createElement("a")
+      link.target = "_blank"
+      const href = generateLink(BASE_URL, answer)
+      link.innerText = href
+      link.href = href
+      link.click()
+      link.remove()
+    }
+
     const linkButton = document.createElement("button")
     linkButton.innerText = "generate"
     linkButton.classList.add("button")
@@ -293,12 +304,15 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!!/[^a-z]/i.test(answer)) {
         window.alert("Answer can only contain alphabetic character")
       }
-      const link = document.createElement("a")
-      link.target = "_blank"
-      const href = generateLink(BASE_URL, answer)
-      link.innerText = href
-      link.href = href
-      link.click()
+      createAndOpenLink(answer)
+    })
+
+    const randomLinkButton = document.createElement("button")
+    randomLinkButton.innerText = "random"
+    randomLinkButton.classList.add("button")
+    randomLinkButton.addEventListener("click", function () {
+      const answer = getRandomElement(ACCEPTED_WORD_MAP.get(5))
+      createAndOpenLink(answer)
     })
 
     const shareButton = document.createElement("button")
@@ -314,6 +328,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     container.appendChild(field)
     container.appendChild(linkButton)
+    container.appendChild(randomLinkButton)
     container.appendChild(shareButton)
     return container
   }
