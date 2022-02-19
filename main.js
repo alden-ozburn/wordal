@@ -281,11 +281,13 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   const createShareButtonId = () => "share-button"
+  const createAnswerFieldId = () => "answer-field"
   const generateActionPanel = (onShare) => {
     const container = document.createElement("div")
     container.classList.add("action-panel")
 
     const field = document.createElement("input")
+    field.id = createAnswerFieldId()
     field.type = "text"
     field.placeholder = "answer"
     field.classList.add("field")
@@ -342,7 +344,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   const createKeyId = letter => `key-${letter}`
-  const generateKeyboard = (onClickLetter, onClickEnter, onClickBackspace) => {
+  const generateKeyboard = (onLetter, onEnter, onBackspace) => {
     const ALPHABET_KEYS = [
       ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
       ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
@@ -360,7 +362,7 @@ document.addEventListener("DOMContentLoaded", function () {
         enterKey.classList.add("keyboard-key")
         enterKey.innerText = "enter"
         enterKey.addEventListener("click", function () {
-          onClickEnter()
+          onEnter()
         })
         keyRow.appendChild(enterKey)
       }
@@ -371,7 +373,7 @@ document.addEventListener("DOMContentLoaded", function () {
         key.classList.add("keyboard-key", "letter")
         key.innerText = letterValue
         key.addEventListener("click", function () {
-          onClickLetter(letterValue)
+          onLetter(letterValue)
         })
         keyRow.appendChild(key)
       })
@@ -380,7 +382,7 @@ document.addEventListener("DOMContentLoaded", function () {
         backspaceKey.classList.add("keyboard-key")
         backspaceKey.innerText = "<="
         backspaceKey.addEventListener("click", function () {
-          onClickBackspace()
+          onBackspace()
         })
         keyRow.appendChild(backspaceKey)
       }
@@ -421,26 +423,41 @@ document.addEventListener("DOMContentLoaded", function () {
     updateBoard(state)
   }
 
-  const onClickLetter = state => letter => {
+  const onLetter = state => letter => {
     if (currentPositionState.hasGuessedCorrectly) { return }
     enterLetter(state, letter)
   }
-  const onClickEnter = state => () => {
+  const onEnter = state => () => {
     if (currentPositionState.hasGuessedCorrectly) { return }
     checkCurrentGuess(state)
   }
-  const onClickBackspace = state => () => {
+  const onBackspace = state => () => {
     if (currentPositionState.hasGuessedCorrectly) { return }
     removePreviousLetter(state)
   }
+
+  document.addEventListener("keydown", function (event) {
+    if (event.target.id === createAnswerFieldId()) { return }
+    const isLetter = key => /^[a-z]$/i.test(key)
+    const ENTER = "Enter"
+    const BACKSPACE = "Backspace"
+    const eventKey = event.key
+    if (isLetter(eventKey)) {
+      onLetter(state)(eventKey)
+    } else if (eventKey === ENTER) {
+      onEnter(state)()
+    } else if (eventKey === BACKSPACE) {
+      onBackspace(state)()
+    }
+  })
 
   const container = document.getElementById(CONTAINER_ID)
   if (IS_ANSWER_VALID) {
     container.appendChild(generateBoard(WORD_LENGTH, MAX_GUESS_COUNT))
     container.appendChild(generateKeyboard(
-      onClickLetter(state),
-      onClickEnter(state),
-      onClickBackspace(state),
+      onLetter(state),
+      onEnter(state),
+      onBackspace(state),
     ))
   }
   updateBoard(state)
