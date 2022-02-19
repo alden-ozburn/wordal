@@ -51,9 +51,6 @@ body {
   width: fit-content;
 }
 
-.check-button-container .check-button {}
-.check-button-container .share-button {}
-
 .action-panel {
   margin-left: auto;
   margin-right: auto;
