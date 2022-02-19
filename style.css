@@ -1,6 +1,6 @@
 body {
   background: black;
-  font-family: 'Courier New', monospace;
+  font-family: 'Courier New', Courier, monospace;
 }
 
 #wordal {
@@ -93,8 +93,6 @@ body {
   text-align: center;
 }
 
-.keyboard .keyboard-row {}
-
 .keyboard .keyboard-row .keyboard-key {
   background: dimgrey;
   color: white;
@@ -103,6 +101,9 @@ body {
   padding: 16px 10px;
   margin: 3px;
   text-transform: uppercase;
+}
+.keyboard .keyboard-row .keyboard-key.letter {
+  width: 29px;
 }
 
 .keyboard .keyboard-row .keyboard-key.present {

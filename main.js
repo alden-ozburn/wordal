@@ -325,7 +325,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const letterValue = rowLetters[letter]
         const key = document.createElement("button")
         key.id = createKeyId(letterValue)
-        key.classList.add("keyboard-key")
+        key.classList.add("keyboard-key", "letter")
         key.innerText = letterValue
         key.addEventListener("click", function () {
           onClickLetter(letterValue)
