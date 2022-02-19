@@ -52,9 +52,20 @@ document.addEventListener("DOMContentLoaded", function () {
   const MAX_GUESS_COUNT = WORD_LENGTH + 1
 
   const saveState = state => saveStateByKey(ENCODED_ANSWER, state)
-  const loadState = state => loadStateByKey(ENCODED_ANSWER)
+  const loadState = () => loadStateByKey(ENCODED_ANSWER)
 
-  const loadedState = loadState()
+  let loadedState = loadState()
+  if (
+    loadedState &&
+    loadedState.currentPositionState &&
+    loadedState.currentPositionState.hasGuessedCorrectly
+  ) {
+    const message = "You have already solved this puzzle, would you like to clear it and play again?"
+    const clearLoadedState = window.confirm(message)
+    if (clearLoadedState) {
+      loadedState = {}
+    }
+  }
 
   const CONTAINER_ID = "wordal"
   const IS_ANSWER_VALID = answerIsValid(ANSWER)
