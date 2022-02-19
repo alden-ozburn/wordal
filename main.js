@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+  const ACCEPTED_WORDS = window.WORDAL_DATA
   const range = length => [...Array(length).keys()]
   const zip = (...arrays) => arrays.length > 0
     ? range(Math.min(...arrays.map(array => array.length))).map(index =>
@@ -50,6 +51,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const ANSWER = decodeAnswer(ENCODED_ANSWER)
   const WORD_LENGTH = ANSWER.length
   const MAX_GUESS_COUNT = WORD_LENGTH + 1
+
+  const ACCEPTED_WORD_MAP = new Map([[5, ACCEPTED_WORDS]])
+  const ACCEPTED_WORDS_LIST = ACCEPTED_WORD_MAP.get(WORD_LENGTH).concat(ANSWER)
 
   const saveState = state => saveStateByKey(ENCODED_ANSWER, state)
   const loadState = () => loadStateByKey(ENCODED_ANSWER)
@@ -212,8 +216,16 @@ document.addEventListener("DOMContentLoaded", function () {
     currentPositionState.hasGuessedCorrectly = true
     showShareButton()
   }
+  const isAcceptedGuess = guess => {
+    if (!ACCEPTED_WORDS_LIST) return true
+    return ACCEPTED_WORDS_LIST.includes(guess)
+  }
   const checkLine = (state, answer) => {
     const guess = getGuessFromLine(state.boardState, currentPositionState.currentLine)
+    if (!isAcceptedGuess(guess)) {
+      window.alert("Invalid word")
+      return
+    }
     const result = getResult(answer, guess)
     console.log(resultToEmoji(result))
     if (resultIsCorrect(result)) {
