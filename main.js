@@ -64,9 +64,12 @@ document.addEventListener("DOMContentLoaded", function () {
   if (
     loadedState &&
     loadedState.currentPositionState &&
-    loadedState.currentPositionState.hasGuessedCorrectly
+    (
+      loadedState.currentPositionState.hasGuessedCorrectly ||
+      loadedState.currentPositionState.hasFailedToGuessCorrectly
+    )
   ) {
-    const message = "You have already solved this puzzle, would you like to clear it and play again?"
+    const message = "You have already completed this puzzle, would you like to clear it and play again?"
     const clearLoadedState = window.confirm(message)
     if (clearLoadedState) {
       loadedState = {}
@@ -77,6 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const IS_ANSWER_VALID = answerIsValid(ANSWER)
   const currentPositionState = loadedState.currentPositionState || {
     hasGuessedCorrectly: false,
+    hasFailedToGuessCorrectly: false,
     currentLine: 0,
     currentLetter: 0,
   }
@@ -233,6 +237,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (resultIsCorrect(result)) {
       onCorrectGuess()
     } else if (currentPositionState.currentLine > MAX_GUESS_COUNT - 1 - 1) {
+      currentPositionState.hasFailedToGuessCorrectly = true
       const message = `The answer was ${answer}`
       window.alert(message)
     }
