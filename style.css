@@ -105,7 +105,8 @@ body {
   text-transform: uppercase;
 }
 .keyboard .keyboard-row .keyboard-key.letter {
-  width: 33px;
+  width: 30px;
+  font-size: 12px;
 }
 
 .keyboard .keyboard-row .keyboard-key.absent {
