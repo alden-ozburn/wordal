@@ -34,8 +34,6 @@ document.addEventListener("DOMContentLoaded", function () {
   let currentLine = 0
   let currentLetter = 0
 
-  const guessState = range()
-
   const checkWord = (answer, guess) => {
     const indexMatch = new Map()
     const answerMap = new Map()
@@ -56,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return result.map(option => OPTIONS_TO_EMOJI[option]).join("")
   }
 
-  const creatBoard = () => {
+  const createBoard = () => {
     const board = document.createElement("div")
     board.classList.add("board")
     return board
@@ -82,11 +80,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const setCellValue = (cell, value) => cell.innerText = value
 
   const cellsInLine = (wordLength, row) => {
-    const cells = []
-    for (let column = 0; column < wordLength; column++) {
-      cells.push(document.getElementById(createCellId(row, column)))
-    }
-    return cells
+    return range(wordLength).map(column =>
+      document.getElementById(createCellId(row, column))
+    )
   }
   const cellsToGuess = cells => cells.map(getCellValue).join("")
 
@@ -109,11 +105,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   const getBoardState = (answer, wordLength) => {
-    const results = []
-    for (let row = 0; row < currentLine; row++) {
-      const result = getResultFromLine(answer, wordLength, row)
-      results.push(result)
-    }
+    const results = range(currentLine).map(row =>
+      getResultFromLine(answer, wordLength, row)
+    )
     return results.map(result => resultToEmoji(result)).join("\n")
   }
 
@@ -146,15 +140,15 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   const generateBoard = (wordLength, maxGuessCount) => {
-    const board = creatBoard()
-    for (let row = 0; row < maxGuessCount; row++) {
-      const line = createLine(row)
-      for (let column = 0; column < wordLength; column++) {
-        const cell = createCell(row, column)
-        line.appendChild(cell)
-      }
-      board.appendChild(line)
-    }
+    const board = createBoard()
+    range(maxGuessCount)
+      .forEach(row => {
+        const line = createLine(row)
+        range(wordLength)
+          .map(column => createCell(row, column))
+          .forEach(cell => line.appendChild(cell))
+        board.appendChild(line)
+      })
     return board
   }
 
@@ -226,7 +220,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const LAST_ROW = ALPHABET_KEYS.length - 1
     const keyboard = document.createElement("div")
     keyboard.classList.add("keyboard")
-    for (let row = 0; row < ALPHABET_KEYS.length; row++) {
+    range(ALPHABET_KEYS.length).forEach(row => {
       const keyRow = document.createElement("div")
       keyRow.classList.add("keyboard-row")
       const rowLetters = ALPHABET_KEYS[row]
@@ -239,7 +233,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         keyRow.appendChild(enterKey)
       }
-      for (let letter = 0; letter < rowLetters.length; letter++) {
+      range(rowLetters.length).forEach(letter => {
         const letterValue = rowLetters[letter]
         const key = document.createElement("button")
         key.id = createKeyId(letterValue)
@@ -249,7 +243,7 @@ document.addEventListener("DOMContentLoaded", function () {
           onClickLetter(letterValue)
         })
         keyRow.appendChild(key)
-      }
+      })
       if (row === LAST_ROW) {
         const backspaceKey = document.createElement("button")
         backspaceKey.classList.add("keyboard-key")
@@ -260,7 +254,7 @@ document.addEventListener("DOMContentLoaded", function () {
         keyRow.appendChild(backspaceKey)
       }
       keyboard.appendChild(keyRow)
-    }
+    })
     return keyboard
   }
 
