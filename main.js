@@ -11,6 +11,17 @@ document.addEventListener("DOMContentLoaded", function () {
   const getQueryParameterValue = key => new URLSearchParams(window.location.search).get(key)
   const answerIsValid = answer => answer.length > 0
 
+  const saveStateByKey = (key, state) => {
+    localStorage.setItem(key, JSON.stringify({
+      ...state,
+      letterOptionState: Object.fromEntries(state.letterOptionState.entries())
+    }))
+  }
+  const loadStateByKey = key => {
+    const loadedState = localStorage.getItem(key)
+    return loadedState ? JSON.parse(loadedState) : {}
+  }
+
   const BASE_URL = getBaseUrl()
   const NAME = "Wordal"
 
@@ -40,11 +51,18 @@ document.addEventListener("DOMContentLoaded", function () {
   const WORD_LENGTH = ANSWER.length
   const MAX_GUESS_COUNT = WORD_LENGTH + 1
 
+  const saveState = state => saveStateByKey(ENCODED_ANSWER, state)
+  const loadState = state => loadStateByKey(ENCODED_ANSWER)
+
+  const loadedState = loadState()
+
   const CONTAINER_ID = "wordal"
   const IS_ANSWER_VALID = answerIsValid(ANSWER)
-  let hasGuessedCorrectly = false
-  let currentLine = 0
-  let currentLetter = 0
+  const currentPositionState = loadedState.currentPositionState || {
+    hasGuessedCorrectly: false,
+    currentLine: 0,
+    currentLetter: 0,
+  }
 
   const EMPTY_CELL_VALUE = null
   const rowRange = range(MAX_GUESS_COUNT)
@@ -57,16 +75,16 @@ document.addEventListener("DOMContentLoaded", function () {
   const setStateAtCell = (state, row, column, value) => state[row][column] = value
   const clearStateAt = (state, row, column) => state[row][column] = EMPTY_CELL_VALUE
   const setStateAtCurrentCell = (state, value) => {
-    setStateAtCell(state, currentLine, currentLetter, value)
-    currentLetter++
+    setStateAtCell(state, currentPositionState.currentLine, currentPositionState.currentLetter, value)
+    currentPositionState.currentLetter++
   }
   const clearStateAtPrevious = (state) => {
-    clearStateAt(state, currentLine, currentLetter - 1)
-    currentLetter--
+    clearStateAt(state, currentPositionState.currentLine, currentPositionState.currentLetter - 1)
+    currentPositionState.currentLetter--
   }
   const setStateAtLine = (state, row, values) =>
     columnRange.forEach(column => setStateAtCell(state, row, column, values[column]))
-  const setStateAtCurrentLine = (state, values) => setStateAtLine(state, currentLine, values)
+  const setStateAtCurrentLine = (state, values) => setStateAtLine(state, currentPositionState.currentLine, values)
 
   const updateLetterOptionMapping = (mapping, guess, result) => {
     zip(guess.split(""), result).forEach(([letter, option]) => {
@@ -79,9 +97,16 @@ document.addEventListener("DOMContentLoaded", function () {
     })
   }
 
-  const boardState = createState()
-  const optionState = createState()
-  const letterOptionState = new Map()
+  const boardState = loadedState.boardState || createState()
+  const optionState = loadedState.optionState || createState()
+  const letterOptionState = new Map(Object.entries(loadedState.letterOptionState || {}))
+  const state = {
+    boardState,
+    optionState,
+    letterOptionState,
+    currentPositionState,
+  }
+  loadState(state)
 
   const createLineId = row => `line-${row}`
   const createCellId = (row, column) => `cell-${row}-${column}`
@@ -91,7 +116,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const setCellClassName = (cell, className) =>
     !cell.classList.contains("checked") && cell.classList.add(className)
 
-  const updateBoard = ({boardState, optionState}) => {
+  const updateBoard = state => {
+    saveState(state)
+    const {boardState, optionState} = state
     rowRange.forEach(row => {
       columnRange.forEach(column => {
         const cell = getCell(row, column)
@@ -160,10 +187,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const getResult = (answer, guess) => {
     return checkWord(answer.toLowerCase(), guess.toLowerCase())
   }
-  const getResultFromLine = (answer, wordLength, line) => {
-    const guess = getGuessFromLine(wordLength, line)
-    return getResult(answer, guess)
-  }
 
   const letterValueMap = new Map()
   const resultIsCorrect = result => {
@@ -175,11 +198,11 @@ document.addEventListener("DOMContentLoaded", function () {
     shareButton.classList.remove("hidden")
   }
   const onCorrectGuess = () => {
-    hasGuessedCorrectly = true
+    currentPositionState.hasGuessedCorrectly = true
     showShareButton()
   }
   const checkLine = (state, answer) => {
-    const guess = getGuessFromLine(state.boardState, currentLine)
+    const guess = getGuessFromLine(state.boardState, currentPositionState.currentLine)
     const result = getResult(answer, guess)
     console.log(resultToEmoji(result))
     if (resultIsCorrect(result)) {
@@ -188,8 +211,8 @@ document.addEventListener("DOMContentLoaded", function () {
     setStateAtCurrentLine(state.optionState, result)
     updateLetterOptionMapping(state.letterOptionState, guess, result)
     updateKeyboard(state.letterOptionState)
-    currentLine++
-    currentLetter = 0
+    currentPositionState.currentLine++
+    currentPositionState.currentLetter = 0
   }
 
   const generateBoard = (wordLength, maxGuessCount) => {
@@ -214,8 +237,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   const onShare = state => () => {
-    if (!hasGuessedCorrectly) { return }
-    const emoji = state.optionState.slice(0, currentLine)
+    if (!currentPositionState.hasGuessedCorrectly) { return }
+    const emoji = state.optionState.slice(0, currentPositionState.currentLine)
       .map(resultToEmoji).join("\n")
     const text = [NAME, ENCODED_ANSWER, emoji].join("\n")
     console.log(text)
@@ -251,7 +274,9 @@ document.addEventListener("DOMContentLoaded", function () {
     shareButton.id = createShareButtonId()
     shareButton.innerText = "share"
     shareButton.classList.add("button")
-    shareButton.classList.add("hidden")
+    if (!currentPositionState.hasGuessedCorrectly) {
+      shareButton.classList.add("hidden")
+    }
     shareButton.addEventListener("click", function () {
       onShare()
     })
@@ -320,8 +345,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const positionIsSettable = letter => letter < WORD_LENGTH
   const positionIsClearable = letter => letter > 0
-  const currentPositionIsSettable = () => positionIsSettable(currentLetter)
-  const previousPositionIsClearable = () => positionIsClearable(currentLetter)
+  const currentPositionIsSettable = () => positionIsSettable(currentPositionState.currentLetter)
+  const previousPositionIsClearable = () => positionIsClearable(currentPositionState.currentLetter)
 
   const enterLetter = (state, letter) => {
     if (!currentPositionIsSettable()) { return }
@@ -330,8 +355,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   const checkCurrentGuess = (state) => {
-    if (currentLine >= MAX_GUESS_COUNT) { return }
-    if (!lineIsValid(WORD_LENGTH, currentLine)) { return }
+    if (currentPositionState.currentLine >= MAX_GUESS_COUNT) { return }
+    if (!lineIsValid(WORD_LENGTH, currentPositionState.currentLine)) { return }
     checkLine(state, ANSWER, WORD_LENGTH)
     updateBoard(state)
   }
@@ -343,20 +368,19 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   const onClickLetter = state => letter => {
-    if (hasGuessedCorrectly) { return }
+    if (currentPositionState.hasGuessedCorrectly) { return }
     enterLetter(state, letter)
   }
   const onClickEnter = state => () => {
-    if (hasGuessedCorrectly) { return }
+    if (currentPositionState.hasGuessedCorrectly) { return }
     checkCurrentGuess(state)
   }
   const onClickBackspace = state => () => {
-    if (hasGuessedCorrectly) { return }
+    if (currentPositionState.hasGuessedCorrectly) { return }
     removePreviousLetter(state)
   }
 
   const container = document.getElementById(CONTAINER_ID)
-  const state = {boardState, optionState, letterOptionState}
   if (IS_ANSWER_VALID) {
     container.appendChild(generateBoard(WORD_LENGTH, MAX_GUESS_COUNT))
     container.appendChild(generateKeyboard(
@@ -365,5 +389,7 @@ document.addEventListener("DOMContentLoaded", function () {
       onClickBackspace(state),
     ))
   }
+  updateBoard(state)
+  updateKeyboard(state.letterOptionState)
   container.appendChild(generateActionPanel(onShare(state)))
 })
