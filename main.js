@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   const generateLink = (baseURL, answer) => {
-    const encodedAnswer = encodeAnswer(answer)
+    const encodedAnswer = encodeAnswer(answer.toLowerCase())
     const searchParams = new URLSearchParams()
     searchParams.set(QUERY_PARAM_ANSWER_KEY, encodedAnswer)
     const queryString = searchParams.toString()
@@ -278,6 +278,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const field = document.createElement("input")
     field.type = "text"
+    field.placeholder = "answer"
     field.classList.add("field")
 
     const linkButton = document.createElement("button")
@@ -285,7 +286,13 @@ document.addEventListener("DOMContentLoaded", function () {
     linkButton.classList.add("button")
     linkButton.addEventListener("click", function () {
       const answer = field.value
-      if (!answer) { return }
+      if (!answer) {
+        window.alert("No answer specified")
+        return
+      }
+      if (!!/[^a-z]/i.test(answer)) {
+        window.alert("Answer can only contain alphabetic character")
+      }
       const link = document.createElement("a")
       link.target = "_blank"
       const href = generateLink(BASE_URL, answer)
