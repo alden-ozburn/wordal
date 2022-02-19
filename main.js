@@ -1,10 +1,18 @@
 document.addEventListener("DOMContentLoaded", function () {
   const range = length => [...Array(length).keys()]
+  const getBaseUrl = () => window.location.href.split("?")[0]
+  const encodeAnswer = answer => answer ? window.btoa(answer) : ""
+  const decodeAnswer = encodedAnswer => encodedAnswer ? window.atob(encodedAnswer) : ""
+  const getQueryParameterValue = key => new URLSearchParams(window.location.search).get(key)
+  const answerIsValid = answer => answer.length > 0
+
+  const BASE_URL = getBaseUrl()
   const NAME = "Wordal"
 
   const PRESENT = "PRESENT"
   const CORRECT = "CORRECT"
   const ABSENT = "ABSENT"
+
   const OPTIONS = Object.freeze({
     PRESENT,
     CORRECT,
@@ -22,14 +30,13 @@ document.addEventListener("DOMContentLoaded", function () {
   })
 
   const QUERY_PARAM_ANSWER_KEY = "a"
-  const ENCODED_ANSWER = (new URLSearchParams(window.location.search)).get(QUERY_PARAM_ANSWER_KEY)
-  const ANSWER = ENCODED_ANSWER ? window.atob(ENCODED_ANSWER) : ""
-
+  const ENCODED_ANSWER = getQueryParameterValue(QUERY_PARAM_ANSWER_KEY)
+  const ANSWER = decodeAnswer(ENCODED_ANSWER)
   const WORD_LENGTH = ANSWER.length
   const MAX_GUESS_COUNT = WORD_LENGTH + 1
 
   const CONTAINER_ID = "wordal"
-  const isValidAnswer = ANSWER.length > 0
+  const IS_ANSWER_VALID = answerIsValid(ANSWER)
   let hasGuessedCorrectly = false
   let currentLine = 0
   let currentLetter = 0
@@ -152,14 +159,12 @@ document.addEventListener("DOMContentLoaded", function () {
     return board
   }
 
-  const getBaseUrl = () => window.location.href.split("?")[0]
-  const generateLink = answer => {
-    const encodedAnswer = window.btoa(answer)
-    const baseUrl = getBaseUrl()
+  const generateLink = (baseURL, answer) => {
+    const encodedAnswer = encodeAnswer(answer)
     const searchParams = new URLSearchParams()
     searchParams.set(QUERY_PARAM_ANSWER_KEY, encodedAnswer)
     const queryString = searchParams.toString()
-    return `${baseUrl}?${queryString}`
+    return `${baseURL}?${queryString}`
   }
 
   const onShare = () => {
@@ -189,7 +194,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!answer) { return }
       const link = document.createElement("a")
       link.target = "_blank"
-      const href = generateLink(answer)
+      const href = generateLink(BASE_URL, answer)
       link.innerText = href
       link.href = href
       link.click()
@@ -325,7 +330,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   const container = document.getElementById(CONTAINER_ID)
-  if (isValidAnswer) {
+  if (IS_ANSWER_VALID) {
     container.appendChild(generateBoard(WORD_LENGTH, MAX_GUESS_COUNT))
     container.appendChild(generateKeyboard(
       onClickLetter,
