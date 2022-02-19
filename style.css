@@ -31,6 +31,11 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  border-radius: 2px;
+}
+
+.board .line .cell.absent {
+  background: black;
 }
 
 .board .line .cell.present {
@@ -39,10 +44,6 @@ body {
 
 .board .line .cell.correct {
   background: limegreen;
-}
-
-.board .line .cell.absent {
-  background: black;
 }
 
 .check-button-container {
