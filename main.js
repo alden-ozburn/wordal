@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+  const range = length => [...Array(length).keys()]
   const NAME = "Wordal"
 
   const PRESENT = "PRESENT"
@@ -22,16 +23,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const QUERY_PARAM_ANSWER_KEY = "a"
   const ENCODED_ANSWER = (new URLSearchParams(window.location.search)).get(QUERY_PARAM_ANSWER_KEY)
-  const DECODED_ANSWER = ENCODED_ANSWER ? window.atob(ENCODED_ANSWER) : ""
+  const ANSWER = ENCODED_ANSWER ? window.atob(ENCODED_ANSWER) : ""
 
-  const WORD_LENGTH = DECODED_ANSWER.length
+  const WORD_LENGTH = ANSWER.length
   const MAX_GUESS_COUNT = WORD_LENGTH + 1
 
   const CONTAINER_ID = "wordal"
-  const isValidGame = DECODED_ANSWER.length > 0
+  const isValidAnswer = ANSWER.length > 0
   let hasGuessedCorrectly = false
   let currentLine = 0
   let currentLetter = 0
+
+  const guessState = range()
 
   const checkWord = (answer, guess) => {
     const indexMatch = new Map()
@@ -167,7 +170,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const onShare = () => {
     if (!hasGuessedCorrectly) { return }
-    const state = getBoardState(DECODED_ANSWER, WORD_LENGTH)
+    const state = getBoardState(ANSWER, WORD_LENGTH)
     const text = [NAME, ENCODED_ANSWER, state].join("\n")
     console.log(text)
     navigator.clipboard.writeText(text).then(() => {
@@ -302,7 +305,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const checkCurrentGuess = () => {
     if (currentLine >= MAX_GUESS_COUNT) { return }
     if (!lineIsValid(WORD_LENGTH, currentLine)) { return }
-    checkLine(DECODED_ANSWER, WORD_LENGTH)
+    checkLine(ANSWER, WORD_LENGTH)
     currentLine++
     currentLetter = 0
   }
@@ -328,7 +331,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   const container = document.getElementById(CONTAINER_ID)
-  if (isValidGame) {
+  if (isValidAnswer) {
     container.appendChild(generateBoard(WORD_LENGTH, MAX_GUESS_COUNT))
     container.appendChild(generateKeyboard(
       onClickLetter,
