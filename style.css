@@ -107,16 +107,16 @@ body {
   width: 29px;
 }
 
+.keyboard .keyboard-row .keyboard-key.absent {
+  background: black;
+}
+
 .keyboard .keyboard-row .keyboard-key.present {
   background: goldenrod;
 }
 
 .keyboard .keyboard-row .keyboard-key.correct {
   background: limegreen;
-}
-
-.keyboard .keyboard-row .keyboard-key.absent {
-  background: black;
 }
 
 .hidden {
