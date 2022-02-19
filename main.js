@@ -232,6 +232,9 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log(resultToEmoji(result))
     if (resultIsCorrect(result)) {
       onCorrectGuess()
+    } else if (currentPositionState.currentLine > MAX_GUESS_COUNT - 1 - 1) {
+      const message = `The answer was ${answer}`
+      window.alert(message)
     }
     setStateAtCurrentLine(state.optionState, result)
     updateLetterOptionMapping(state.letterOptionState, guess, result)
