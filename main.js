@@ -53,7 +53,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const MAX_GUESS_COUNT = WORD_LENGTH + 1
 
   const ACCEPTED_WORD_MAP = new Map([[5, ACCEPTED_WORDS]])
-  const ACCEPTED_WORDS_LIST = ACCEPTED_WORD_MAP.get(WORD_LENGTH).concat(ANSWER)
+  const ACCEPTED_WORDS_LIST_DATA = ACCEPTED_WORD_MAP.get(WORD_LENGTH)
+  const ACCEPTED_WORDS_LIST = ACCEPTED_WORDS_LIST_DATA ? ACCEPTED_WORDS_LIST_DATA.concat(ANSWER) : null
 
   const saveState = state => saveStateByKey(ENCODED_ANSWER, state)
   const loadState = () => loadStateByKey(ENCODED_ANSWER)
