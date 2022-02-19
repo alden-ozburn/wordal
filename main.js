@@ -436,6 +436,10 @@ document.addEventListener("DOMContentLoaded", function () {
     removePreviousLetter(state)
   }
 
+  const onLetterPartial = onLetter(state)
+  const onEnterPartial = onEnter(state)
+  const onBackspacePartial = onBackspace(state)
+
   document.addEventListener("keydown", function (event) {
     if (event.target.id === createAnswerFieldId()) { return }
     if (
@@ -449,11 +453,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const BACKSPACE = "Backspace"
     const eventKey = event.key
     if (isLetter(eventKey)) {
-      onLetter(state)(eventKey)
+      onLetterPartial(eventKey)
     } else if (eventKey === ENTER) {
-      onEnter(state)()
+      onEnterPartial()
     } else if (eventKey === BACKSPACE) {
-      onBackspace(state)()
+      onBackspacePartial()
     }
   })
 
@@ -461,9 +465,9 @@ document.addEventListener("DOMContentLoaded", function () {
   if (IS_ANSWER_VALID) {
     container.appendChild(generateBoard(WORD_LENGTH, MAX_GUESS_COUNT))
     container.appendChild(generateKeyboard(
-      onLetter(state),
-      onEnter(state),
-      onBackspace(state),
+      onLetterPartial,
+      onEnterPartial,
+      onBackspacePartial,
     ))
   }
   updateBoard(state)
