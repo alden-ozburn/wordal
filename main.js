@@ -438,6 +438,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.addEventListener("keydown", function (event) {
     if (event.target.id === createAnswerFieldId()) { return }
+    if (
+      event.shiftKey ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey
+    ) { return }
     const isLetter = key => /^[a-z]$/i.test(key)
     const ENTER = "Enter"
     const BACKSPACE = "Backspace"
