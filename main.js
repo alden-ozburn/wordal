@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", function () {
         arrays.map(array => array[index])
       )
     : []
+  const removeLetter = (array, letter) =>
+    array.splice(array.findIndex(char => char === letter), 1)
   const getRandomElement = array => array[Math.floor(Math.random()*array.length)]
   const getBaseUrl = () => window.location.href.split("?")[0]
   const encodeAnswer = answer => answer ? window.btoa(answer) : ""
@@ -162,11 +164,22 @@ document.addEventListener("DOMContentLoaded", function () {
       indexMatch.set(index, guess[index] === answer[index])
       answerMap.set(char, (answerMap.get(char) || []).concat(index))
     })
+    const unusedLetters = answer.split("")
     return guess.split("").map((char, index) => {
       const answerChar = answer[index]
-      if (char === answerChar) return OPTIONS.CORRECT
+      if (char === answerChar) {
+        removeLetter(unusedLetters, char)
+        return OPTIONS.CORRECT
+      }
       const indices = answerMap.get(char)
-      if (indices && indices.some(index => !indexMatch.get(index))) return OPTIONS.PRESENT
+      if (
+        indices &&
+        indices.some(index => !indexMatch.get(index)) &&
+        unusedLetters.includes(char)
+      ) {
+        removeLetter(unusedLetters, char)
+        return OPTIONS.PRESENT
+      }
       return OPTIONS.ABSENT
     })
   }
