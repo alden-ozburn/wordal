@@ -20,6 +20,10 @@ body {
   flex-direction: row;
 }
 
+.board .line.wrong {
+  animation: shake 0.5s cubic-bezier(0.075, 0.82, 0.165, 1) both;
+}
+
 .board .line .cell {
   width: 60px;
   height: 60px;
@@ -123,4 +127,19 @@ body {
 
 .hidden {
   visibility: hidden;
+}
+
+@keyframes shake {
+  20% {
+    transform: translateX(-5px);
+  }
+  40% {
+    transform: translateX(5px);
+  }
+  60% {
+    transform: translateX(-2px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
 }

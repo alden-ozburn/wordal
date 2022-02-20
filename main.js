@@ -132,6 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
   loadState(state)
 
   const createLineId = row => `line-${row}`
+  const getLine = row => document.getElementById(createLineId(row))
   const createCellId = (row, column) => `cell-${row}-${column}`
   const getCell = (row, column) => document.getElementById(createCellId(row, column))
   const getCellValue = (cell) => cell.innerText.toLowerCase()
@@ -235,6 +236,15 @@ document.addEventListener("DOMContentLoaded", function () {
     currentPositionState.hasGuessedCorrectly = true
     showShareButton()
   }
+  const onInvalidGuess = (row) => {
+    const line = getLine(row)
+    line.classList.add("wrong")
+    const animationEndHandler = function () {
+      line.classList.remove("wrong")
+      line.removeEventListener("animationend", animationEndHandler)
+    }
+    line.addEventListener("animationend", animationEndHandler)
+  }
   const isAcceptedGuess = guess => {
     if (!ACCEPTED_WORDS_LIST) return true
     return ACCEPTED_WORDS_LIST.includes(guess)
@@ -242,7 +252,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const checkLine = (state, answer) => {
     const guess = getGuessFromLine(state.boardState, currentPositionState.currentLine)
     if (!isAcceptedGuess(guess)) {
-      window.alert("Invalid word")
+      onInvalidGuess(currentPositionState.currentLine)
       return
     }
     const result = getResult(answer, guess)
