@@ -376,6 +376,12 @@ document.addEventListener("DOMContentLoaded", function () {
       ["z", "x", "c", "v", "b", "n", "m"]
     ]
     const LAST_ROW = ALPHABET_KEYS.length - 1
+    const MIDDLE_ROW = ALPHABET_KEYS.length - 2
+    const createHalfSpacer = () => {
+      const halfSpacer = document.createElement("div")
+      halfSpacer.classList.add("half-space")
+      return halfSpacer
+    }
     const keyboard = document.createElement("div")
     keyboard.classList.add("keyboard")
     range(ALPHABET_KEYS.length).forEach(row => {
@@ -384,12 +390,15 @@ document.addEventListener("DOMContentLoaded", function () {
       const rowLetters = ALPHABET_KEYS[row]
       if (row === LAST_ROW) {
         const enterKey = document.createElement("button")
-        enterKey.classList.add("keyboard-key")
+        enterKey.classList.add("keyboard-key", "action-key")
         enterKey.innerText = "enter"
         enterKey.addEventListener("click", function () {
           onEnter()
         })
         keyRow.appendChild(enterKey)
+      }
+      if (row === MIDDLE_ROW) {
+        keyRow.appendChild(createHalfSpacer())
       }
       range(rowLetters.length).forEach(letter => {
         const letterValue = rowLetters[letter]
@@ -402,10 +411,13 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         keyRow.appendChild(key)
       })
+      if (row === MIDDLE_ROW) {
+        keyRow.appendChild(createHalfSpacer())
+      }
       if (row === LAST_ROW) {
         const backspaceKey = document.createElement("button")
-        backspaceKey.classList.add("keyboard-key")
-        backspaceKey.innerText = "<="
+        backspaceKey.classList.add("keyboard-key", "action-key")
+        backspaceKey.innerText = "del"
         backspaceKey.addEventListener("click", function () {
           onBackspace()
         })

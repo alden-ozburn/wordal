@@ -93,10 +93,13 @@ body {
 .keyboard {
   margin-left: auto;
   margin-right: auto;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  width: fit-content;
-  text-align: center;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  max-width: 500px;
+}
+
+.keyboard .keyboard-row {
+  display: flex;
 }
 
 .keyboard .keyboard-row .keyboard-key {
@@ -104,13 +107,17 @@ body {
   color: white;
   border: none;
   border-radius: 4px;
-  padding: 16px 10px;
-  margin: 3px;
+  height: 60px;
+  padding: 0;
+  margin: 4px 3px;
   text-transform: uppercase;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .keyboard .keyboard-row .keyboard-key.letter {
-  width: 30px;
-  font-size: 12px;
+  font-size: 14px;
+  flex: 1;
 }
 
 .keyboard .keyboard-row .keyboard-key.absent {
@@ -123,6 +130,15 @@ body {
 
 .keyboard .keyboard-row .keyboard-key.correct {
   background: limegreen;
+}
+
+.keyboard .keyboard-row .keyboard-key.action-key {
+  font-size: 10px;
+  flex: 1.5;
+}
+
+.keyboard .keyboard-row .half-space {
+  flex: 0.5;
 }
 
 .hidden {
