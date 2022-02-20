@@ -13,7 +13,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const encodeAnswer = answer => answer ? window.btoa(answer) : ""
   const decodeAnswer = encodedAnswer => encodedAnswer ? window.atob(encodedAnswer) : ""
   const getQueryParameterValue = key => new URLSearchParams(window.location.search).get(key)
-  const answerIsValid = answer => answer.length > 0
+  const isAlpha = word => !/[^a-z]/i.test(word)
+  const answerIsValid = answer => answer.length > 0 && isAlpha(answer)
 
   const saveStateByKey = (key, state) => {
     localStorage.setItem(key, JSON.stringify({
@@ -334,8 +335,9 @@ document.addEventListener("DOMContentLoaded", function () {
         window.alert("No answer specified")
         return
       }
-      if (!!/[^a-z]/i.test(answer)) {
+      if (!isAlpha(answer)) {
         window.alert("Answer can only contain alphabetic character")
+        return
       }
       createAndOpenLink(answer)
     })
